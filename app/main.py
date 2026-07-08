@@ -40,4 +40,19 @@ def get_parties(db: Session = Depends(get_db)):
     return db.query(models.Party).all()
 
 
+@app.get("/parties/{party_id}", response_model=schemas.PartyResponse)
+def get_party(party_id: int, db: Session = Depends(get_db)):
+    party = db.query(models.Party).filter(
+        models.Party.id == party_id
+    ).first()
+
+    if not party:
+        raise HTTPException(
+            status_code=404,
+            detail="Party not found"
+        )
+
+    return party
+
+
 app.include_router(parts_router)
